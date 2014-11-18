@@ -1,0 +1,73 @@
+
+
+#public_upload,
+#download {
+	font-weight:700;
+	margin: 0 0.4em 0 0;
+	padding: 0 5px;
+	height: 32px;
+	float: left;
+
+}
+
+body {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	text-align: center;
+}
+
+/* toggle for opening shared picture view as file list */
+#openAsFileListButton {
+	position: absolute;
+	right: 0;
+	top: 0;
+	font-weight: normal;
+}
+#openAsFileListButton img {
+	vertical-align: text-top;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+	opacity: .5;
+}
+
+
+/* transfer to core after body has the id #body-public / #body-public-dark */
+
+footer {
+	text-align: center;
+	color: #777;
+}
+footer p.info a {
+	font-weight: bold;
+	color: #777;
+	padding: 13px;
+	margin: -13px;
+}
+
+/* transfer to core after body has the id #body-public / #body-public-dark */
+
+footer {
+	text-align: center;
+	color: #888;
+	padding:0;
+	margin:0;
+	
+}
+footer div.info a {
+	font-weight: bold;
+	color: #888;
+	padding: 13px;
+	margin: -13px;
+	
+}
+
+
+footer div.info {
+	height:30px;
+	line-height:30px;
+		background-color: #fff;
+	width:100%;
+	position:fixed;
+	bottom:0px;
+}

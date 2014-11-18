@@ -1,0 +1,14 @@
+<?xml version="1.0"?> 
+<info>
+	<id>pinit</id>
+	<name>Pinit</name>
+	<licence>AGPL</licence>
+	<author>Doell Sebastin</author>
+	<require>7.00</require>
+	<shipped>true</shipped>
+	<description>Pinit, with this app you can create easy social bookmarks, visual bookmarks and map bookmarks, Share your Pins with other users or for public!</description>
+	<default_enable/>
+	<public>
+		<pinwall>public.php</pinwall>
+	</public>
+</info>
