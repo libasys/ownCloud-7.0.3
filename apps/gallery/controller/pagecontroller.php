@@ -283,7 +283,7 @@ class PageController extends Controller {
 		}
 		
 		if ($path == '') {
-			$images = \OCP\Files::searchByMime('image/jpeg');
+			$images = \OCP\Files::searchByMime('image');
 			$path = '/';
 		} else {
 			if (\OC\Files\Filesystem::file_exists($path)) {
@@ -293,35 +293,38 @@ class PageController extends Controller {
 				$path = '/' . $path;
 			}
 			$view = new \OC\Files\View(\OC\Files\Filesystem::getView() -> getAbsolutePath($path));
-			$images = $view -> searchByMime('image/jpeg');
+			$images = $view -> searchByMime('image');
 		
 		}
 		\OC::$session->close();
 		
+		$allowedMimeTypes=array('image/jpeg'=>1,'image/jpg' =>1,'image/png' =>1,'image/gif' =>1);
 		$userView = new \OC\Files\View('/' . $this->userId);
 		$sizeMax = 1024;
 			foreach ($images as $image) {
 				if (strpos($path, DIRECTORY_SEPARATOR . ".")) {
 					continue;
 				}
-				$title = $image['name'];
-				$mtime = $image['mtime'];
-				$id=$image['fileid'];
-				//$image['permissions']
-			  // \OC_Log::write('gallery', 'ID' .$id, \OC_Log::DEBUG);
-				$local = $userView -> getLocalFile('/files' . $path . $image['path']);
-				$size = getimagesize($local, $info);
-				if (array_key_exists('APP13', $info)) {
-					$iptc = iptcparse($info["APP13"]);
-					if (array_key_exists('2#105', $iptc)) {
-						$title = $iptc['2#105'][0];
-			
+				if(array_key_exists(strtolower($image['mimetype']), $allowedMimeTypes)){
+					$title = $image['name'];
+					$mtime = $image['mtime'];
+					$id=$image['fileid'];
+					//$image['permissions']
+				   
+					$local = $userView -> getLocalFile('/files' . $path . $image['path']);
+					$size = getimagesize($local, $info);
+					if (array_key_exists('APP13', $info)) {
+						$iptc = iptcparse($info["APP13"]);
+						if (array_key_exists('2#105', $iptc)) {
+							$title = $iptc['2#105'][0];
+				
+						}
 					}
+				
+					$imagePath = trim($image['path'], '/');
+				
+					$result[] = array('path' => $imagePath, 'title' => $title, 'mtime' => $mtime , 'fileid' => $id);
 				}
-			
-				$imagePath = trim($image['path'], '/');
-			
-				$result[] = array('path' => $imagePath, 'title' => $title, 'mtime' => $mtime , 'fileid' => $id);
 			}
 			$response = new JSONResponse();
 			$response -> setData($result);
