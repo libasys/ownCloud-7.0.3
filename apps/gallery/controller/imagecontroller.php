@@ -65,17 +65,17 @@ class ImageController extends Controller {
 		
 		$ownerView = new \OC\Files\View('/' . $user . '/files' . $startPath);
 		
-		$mime = $ownerView -> getMimeType($img);
+		$mimeType = $ownerView -> getMimeType($img);
 	
-		list($mimePart, ) = explode('/', $mime);
-		if ($mimePart === 'image') {
-			$fileInfo = $ownerView -> getFileInfo($img);
+		   $fileInfo = $ownerView -> getFileInfo($img);
 			if ($fileInfo['encrypted'] === true) {
 				$local = $ownerView -> toTmpFile($img);
 			} else {
 				$local = $ownerView -> getLocalFile($img);
 			}
-		
+			
+		if ($mimeType == 'image/jpeg' || $mimeType == 'image/jpg') {
+			
 			$rotate = false;
 			if (is_callable('exif_read_data')) {//don't use OCP\Image here, using OCP\Image will always cause parsing the image file
 				$exif = @exif_read_data($local);
@@ -151,11 +151,21 @@ class ImageController extends Controller {
 				
 			}
 		
+		 $result['success']=1;
+		
+		}else{
+			$size = getimagesize($local);
+			$result['size'] = $size[0] . ' x ' . $size[1] . ' px';
+			$result['fSize']=\OCP\Util::humanFileSize($fileInfo['size']);
+			$result['filename']=$fileInfo->getName();
+			$dateTime=date("d-m-Y",$fileInfo['mtime']);
+			$result['creation_date']=$dateTime;
+			$result['success']=0;
+			
+		}
 		$response = new JSONResponse();
 		$response -> setData($result);
 		return $response;
-		
-		}
 		
 		
 	}

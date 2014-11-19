@@ -268,11 +268,17 @@ SlideShow.prototype.metaInfoEdit = function() {
 			file : path,
 			token : token
 		}, function(result) {
+			
 			$('#overlayEdit').show();
-
-			var html = $('<div/>').html('<label>Edit IPTC Metadata</label><div id="dMessage"></div>' + 'Title: <input type="text" placeholder="Titel" id="mTitle" style="width:94%;" value="' + result['title'] + '" /><br>' + 'Description: <input type="text" style="width:94%;" placeholder="Beschreibung" id="mDescr" value="' + result['description'] + '" /><br />' + 'Location: <input type="text" style="width:94%;" placeholder="Addresse" id="mAddr" value="' + result['location'] + '" /><br />' + 'City: <input type="text" style="width:94%;" placeholder="Ort" id="mCity" value="' + result['city'] + '" /><br />' + 'Country: <input type="text" style="width:94%;" placeholder="Land" id="mCountry" value="' + result['country'] + '" /><br />' + '<br />');
-			$('#dialog').append(html);
-			$('#dialog').append(Save);
+			if(result['success'] == 1){
+				var html = $('<div/>').html('<label>Edit IPTC Metadata</label><div id="dMessage"></div>' + 'Title: <input type="text" placeholder="Titel" id="mTitle" style="width:94%;" value="' + result['title'] + '" /><br>' + 'Description: <input type="text" style="width:94%;" placeholder="Beschreibung" id="mDescr" value="' + result['description'] + '" /><br />' + 'Location: <input type="text" style="width:94%;" placeholder="Addresse" id="mAddr" value="' + result['location'] + '" /><br />' + 'City: <input type="text" style="width:94%;" placeholder="Ort" id="mCity" value="' + result['city'] + '" /><br />' + 'Country: <input type="text" style="width:94%;" placeholder="Land" id="mCountry" value="' + result['country'] + '" /><br />' + '<br />');
+				$('#dialog').append(html);
+				$('#dialog').append(Save);
+			}else{
+				var html="<label>Information</label><br />Not Supported Image Format, only JPEG Files are editable!<br /><br />";
+				$('#dialog').append(html);
+			}
+			
 			$('#dialog').append(Close);
 
 			$('#dialog').show();
@@ -527,39 +533,49 @@ SlideShow.prototype.getMetaInfo = function(path) {
 			file : path,
 			token : token
 		}, function(result) {
-
-			if (result['title'] != '') {
-				metaInfo += '<label class="mTitle">' + result['title'] + '</label><br>';
-			}
-			if (result['description'] != '') {
-				metaInfo += '<label class="mDescr">' + result['description'] + '</label><br>';
-			}
-			if (result['creation_date'] != '') {
-				metaInfo += '<label class="mDate">' + result['creation_date'] + '</label><br>';
-			}
-			if (result['location'] != '') {
-				metaInfo += result['location'] + '<br>';
-			}
-			if (result['city'] != '') {
-				metaInfo += result['city'] + ' ';
-			}
-			if (result['country'] != '') {
-				metaInfo += result['country'] + '<br>';
-			} else {
-				metaInfo += '<br>';
-			}
-			if (result['size'] != '') {
-				metaInfo += '<label class="mInfo">' + result['size'] + '/ ' + result['fSize'] + ' (' + result['filename'] + ')</label><br>';
-			}
-
-			if (result['latitude'] != '' && result['longitude'] != '') {
-				metaInfo += 'Location Map:<br /><img class="map" id="geoloc" title="location" style="opacity:0.6;" src="http://maps.google.com/maps/api/staticmap?zoom=15&size=250x300&maptype=terrain&sensor=false&center=' + result['latitude'] + ',' + result['longitude'] + '&markers=color:blue%7Clabel:S%7C' + result['latitude'] + ',' + result['longitude'] + '"><br>';
-				this.container.children('label.labelBigImage').css('left','10px');
-			}
-            this.mainContainer.children('label.labelBigImage').css('left',this.container.children('img').offset().left+'px');
-			this.mainContainer.children('label.labelBigImage').html(metaInfo);
-			this.mainContainer.children('label.labelBigImage').show();
-
+            if(result['success'] == 1){
+				if (result['title'] != '') {
+					metaInfo += '<label class="mTitle">' + result['title'] + '</label><br>';
+				}
+				if (result['description'] != '') {
+					metaInfo += '<label class="mDescr">' + result['description'] + '</label><br>';
+				}
+				if (result['creation_date'] != '') {
+					metaInfo += '<label class="mDate">' + result['creation_date'] + '</label><br>';
+				}
+				if (result['location'] != '') {
+					metaInfo += result['location'] + '<br>';
+				}
+				if (result['city'] != '') {
+					metaInfo += result['city'] + ' ';
+				}
+				if (result['country'] != '') {
+					metaInfo += result['country'] + '<br>';
+				} else {
+					metaInfo += '<br>';
+				}
+				if (result['size'] != '') {
+					metaInfo += '<label class="mInfo">' + result['size'] + '/ ' + result['fSize'] + ' (' + result['filename'] + ')</label><br>';
+				}
+	
+				if (result['latitude'] != '' && result['longitude'] != '') {
+					metaInfo += 'Location Map:<br /><img class="map" id="geoloc" title="location" style="opacity:0.6;" src="http://maps.google.com/maps/api/staticmap?zoom=15&size=250x300&maptype=terrain&sensor=false&center=' + result['latitude'] + ',' + result['longitude'] + '&markers=color:blue%7Clabel:S%7C' + result['latitude'] + ',' + result['longitude'] + '"><br>';
+					this.container.children('label.labelBigImage').css('left','10px');
+				}
+	            this.mainContainer.children('label.labelBigImage').css('left',this.container.children('img').offset().left+'px');
+				this.mainContainer.children('label.labelBigImage').html(metaInfo);
+				this.mainContainer.children('label.labelBigImage').show();
+           }else{
+           	    if (result['size'] != '') {
+					metaInfo = '<label class="mTitle">' + result['filename'] + '</label><br>';
+					metaInfo += '<label class="mDate">' + result['creation_date'] + '</label><br>';
+					metaInfo += '<label class="mInfo">' + result['size'] + '/ ' + result['fSize'] + '</label><br>';
+				}
+				
+           	    this.mainContainer.children('label.labelBigImage').css('left',this.container.children('img').offset().left+'px');
+				this.mainContainer.children('label.labelBigImage').html(metaInfo);
+				this.mainContainer.children('label.labelBigImage').show();
+           }
 		}.bind(this));
 
 		return false;
