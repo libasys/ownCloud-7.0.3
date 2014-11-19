@@ -18,6 +18,7 @@ class ImageController extends Controller {
 	}
 	
 	
+	
 	/**
 	 *
 	 * @NoCSRFRequired
@@ -77,14 +78,16 @@ class ImageController extends Controller {
 		if ($mimeType == 'image/jpeg' || $mimeType == 'image/jpg') {
 			
 			$rotate = false;
-			if (is_callable('exif_read_data')) {//don't use OCP\Image here, using OCP\Image will always cause parsing the image file
+			if (is_callable('exif_read_data')) {
 				$exif = @exif_read_data($local);
+			}
+			
 				$size = getimagesize($local, $info);
 				$result=array('description' => '', 'title' => '', 'creation_date' => '', 'country' => '', 'size' => '', 'fSize' => '', 'latitude' => '', 'longitude' => '', 'city' => '', 'location' => '', 'filename' => '');
 				
 				$result['size'] = $size[0] . ' x ' . $size[1] . ' px';
 				
-				if (array_key_exists('APP13',$info)) {
+				if (is_array($info) && array_key_exists('APP13',$info)) {
 					$iptc = iptcparse($info["APP13"]);
 					
 					if(array_key_exists('2#120', $iptc)){
@@ -113,12 +116,9 @@ class ImageController extends Controller {
 		
 				}
 				
-				
-				
-				if (!array_key_exists('APP13',$info)) {
-					//$maxHumanFileSize = \OCP\Util::humanFileSize($maxUploadFileSize);
+				if ($result['title'] =='' && is_array($exif)) {
+					
 				    if(isset($exif['FileDateTime'])){
-			        	//$edate = $exif['FileDateTime']; 
 						$dateTime=date("d-m-Y",$exif['FileDateTime']);
 						$result['creation_date']=$dateTime;
 			        }
@@ -129,6 +129,7 @@ class ImageController extends Controller {
 			        }
 				}
 				
+				if (is_array($exif)) {
 				 $result['filename']=$exif['FileName'];
 				 
 				if(isset($exif['DateTimeDigitized']) && strlen($exif['DateTimeDigitized']) >= 8){
@@ -148,7 +149,12 @@ class ImageController extends Controller {
 				if(isset($exif['FileSize'])){
 						$result['fSize']=\OCP\Util::humanFileSize($exif['FileSize']);
 			        }
+			     }
 				
+			if (!is_array($info) && !is_array($exif)) {
+				$result['fSize']=\OCP\Util::humanFileSize($fileInfo['size']);
+				$result['filename']=$fileInfo->getName();
+				$result['title']=$fileInfo->getName();
 			}
 		
 		 $result['success']=1;

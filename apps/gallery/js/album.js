@@ -361,14 +361,12 @@ GalleryImage.prototype.getDom = function (targetHeight) {
 			var externLink='';
 		
 			if(image.token != '' && image.token != undefined){
-			var PublicPath=OC.linkTo('','public.php?service=files&t='+image.token+'&files='+ encodeURIComponent(image.path)+'&download');	
-			/*	
-			var PublicPath=OC.generateUrl('apps/files/public/{token}?file={file}&download', {
-					file: encodeURIComponent(image.path),
-					token: (image.token) ? image.token : ''
-				});*/
-				externLink=' <a href="'+PublicPath+'" class="svg icon-download" title="Download Image" style="width:20px; height:32px;background-size:16px 16px;"></a>';
-			}	
+				var DownloadLinkSrc=OC.linkTo('','public.php?service=files&t='+image.token+'&files='+ encodeURIComponent(image.path)+'&download');	
+			}else{
+				var DownloadLinkSrc=OC.generateUrl('apps/gallery/downloadimage?file={file}',{file: encodeURIComponent(image.path)});	
+		    }
+				externLink=' <a href="'+DownloadLinkSrc+'" class="svg icon-download" title="Download Original Image" style="width:20px; height:32px;background-size:16px 16px;"></a>';
+				
 			a.append($('<label/>').attr('class','descr').html(imgName+externLink));
 			a.append(img);
 			return a;

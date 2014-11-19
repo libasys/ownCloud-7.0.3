@@ -22,6 +22,7 @@ $application->registerRoutes($this, array('routes' => array(
 	array('name' => 'page#getImageData', 'url' => '/getimages', 'verb' => 'GET'),
 	array('name' => 'page#getImagesCaching', 'url' => '/getimagescaching', 'verb' => 'GET'),
 	)));
+	$this->create('gallery_image_download', 'downloadimage')->actionInclude('gallery/ajax/download.php');
 	$this->create('gallery_ajax_image', 'ajax/image')->actionInclude('gallery/ajax/image.php');
 	$this->create('gallery_ajax_thumbnail', 'ajax/thumbnail')->actionInclude('gallery/ajax/thumbnail.php');
 	$this->create('gallery_ajax_batch', 'ajax/thumbnail/batch')	->actionInclude('gallery/ajax/batch.php');
