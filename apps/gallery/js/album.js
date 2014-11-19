@@ -41,14 +41,23 @@ Album.prototype.getOneImage = function (image, targetHeight, calcWidth, a, squar
  	var gm = new GalleryImage(image.src, path, image.title ,image.mtime);
 	gm.getThumbnail(square).then(function(img) {
 		
-		a.append(img);
-		img.height = (targetHeight / 2) - 2;
-		img.width = calcWidth-2;
-		$(img).click(function(){
+		if(square == 2){
+			var divCrop=$('<div/>').addClass('cropHeight').css({'margin-left':'0px','max-height': ((targetHeight / 2)-2)+'px','overflow':'hidden','display':'block','width':(calcWidth-1)+'px'});
+			$(img).addClass('scale');
+			divCrop.append(img);
+			a.append(divCrop);
+			img.width = calcWidth-1;
+		}else{
+			a.append(img);
+			img.height = (targetHeight / 2) - 2;
+			img.width = calcWidth-2;
+		}
+		 $(img).click(function(){
 		    window.location='#'+albumpath;
-			
 		});
-	});
+		
+		});
+	
 };
 
 /**
@@ -59,7 +68,7 @@ Album.prototype.getOneImage = function (image, targetHeight, calcWidth, a, squar
  * @returns {a}
  */
 Album.prototype.getFourImages = function (images, targetHeight, ratio, a) {
-
+  
 	var calcWidth = (targetHeight * ratio) / 2;
 	var iImagesCount = images.length;
 	if (iImagesCount > 4) {
@@ -130,8 +139,9 @@ Album.prototype.getDom = function (targetHeight) {
 		a.append(label);
 		
 		var ratio = Math.round(img.ratio * 100) / 100;
+		//var ratio = 1;
 		var calcWidth = (targetHeight * ratio) / 2;
-
+       
 		a.width(calcWidth * 2);
 		a.height(targetHeight);
 
