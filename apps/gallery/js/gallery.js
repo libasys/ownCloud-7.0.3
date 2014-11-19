@@ -2,6 +2,8 @@ var Gallery = {};
 Gallery.images = [];
 Gallery.currentAlbum = '';
 Gallery.users = [];
+Gallery.fallBack=(typeof EventSource === 'undefined')?true:false;
+//Gallery.fallBack=true;
 Gallery.albumMap = {};
 Gallery.imageMap = {};
 Gallery.folderSharees = {};
@@ -61,29 +63,27 @@ Gallery.fillAlbums = function() {
 		for (var i = 0; i < Gallery.images.length; i++) {
 			var path = Gallery.images[i]['path'];
 			//alert(Gallery.images[i]['title']);
-			image = new GalleryImage(Gallery.images[i]['path'], path, Gallery.images[i]['title'], Gallery.images[i]['mtime'], Gallery.images[i]['fileid'], token);
+			 image = new GalleryImage(Gallery.images[i]['path'], path, Gallery.images[i]['title'], Gallery.images[i]['mtime'], Gallery.images[i]['fileid'], token);
 			
 			var dir = OC.dirname(path);
 			if (dir === path) {
 				dir = '';
 			}
 			
-			album = Gallery.getAlbum(dir,token);
+		    album = Gallery.getAlbum(dir,token);
 			album.images.push(image);
 			Gallery.imageMap[image.path] = image;
 			
 			
 			
 		}
-
-		for (path in Gallery.albumMap) {
-			
-			Gallery.albumMap[path].images.sort(sortFunction);
-			//Sort DESC
-			//Gallery.albumMap[path].images.reverse();
+        
+        $.each(Gallery.albumMap,function(path){
+         	Gallery.albumMap[path].images.sort(sortFunction);
 			Gallery.albumMap[path].subAlbums.sort(sortFunction);
-		}
-
+        });
+       
+		
 	});
 
 };
@@ -174,6 +174,7 @@ Gallery.view.viewAlbum = function(albumPath) {
 	OC.Breadcrumb.push(albumName, '#').click(function() {
 		//Gallery.view.viewAlbum('');
 	});
+	
 	path = '';
 	crumbs = albumPath.split('/');
 	for ( i = 0; i < crumbs.length; i++) {
@@ -189,7 +190,7 @@ Gallery.view.viewAlbum = function(albumPath) {
 
 	Gallery.getAlbumInfo(Gallery.currentAlbum);
 	//preload album info
-
+  
 	Gallery.albumMap[albumPath].viewedItems = 0;
 	setTimeout(function() {
 		Gallery.view.loadVisibleRows.activeIndex = 0;
@@ -214,8 +215,10 @@ Gallery.view.loadVisibleRows = function(album, path) {
 		}
 		
 		return album.getNextRow($(window).width()).then(function(row) {
+			
 			return row.getDom().then(function(dom) {
 				// defer removal of loading class to trigger CSS3 animation
+				
 				_.defer(function() {
 					dom.removeClass('loading');
 				});
@@ -228,7 +231,7 @@ Gallery.view.loadVisibleRows = function(album, path) {
 					Gallery.showNormal();
 				}
 				Gallery.view.element.append(dom);
-				
+				 
 				if (album.viewedItems < album.subAlbums.length + album.images.length && Gallery.view.element.height() < targetHeight) {
 					return showRows(album);
 				} else {
@@ -244,6 +247,7 @@ Gallery.view.loadVisibleRows = function(album, path) {
 	};
 	if (Gallery.view.element.height() < targetHeight) {
 	Gallery.view.loadVisibleRows.loading = true;
+	
 	Gallery.view.loadVisibleRows.loading = showRows(album);
 
 	return Gallery.view.loadVisibleRows.loading;
@@ -315,10 +319,12 @@ Gallery.sortImagesRefresh = function() {
 	var albumPath = path;
 	var album = Gallery.albumMap[albumPath];
 	var images = album.images;
-
-	for (path in Gallery.albumMap) {
-		Gallery.albumMap[path].images.sort(sortFunction);
-	}
+    
+     $.each(Gallery.albumMap,function(path){
+         	Gallery.albumMap[path].images.sort(sortFunction);
+       });
+    
+	
 	Gallery.view.viewAlbum(Gallery.currentAlbum);
 };
 
@@ -353,15 +359,17 @@ Gallery.sortImagesByName = function() {
 		var album = Gallery.albumMap[albumPath];
 		var images = album.images;
 
-		for (path in Gallery.albumMap) {
-			Gallery.albumMap[path].images.sort(sortFunction);
+         $.each(Gallery.albumMap,function(path){
+         	Gallery.albumMap[path].images.sort(sortFunction);
 			Gallery.albumMap[path].subAlbums.sort(sortFunction);
 			//Sort DESC
 			if ($('button.sort').hasClass('arrowDown')) {
 				Gallery.albumMap[path].images.reverse();
 				Gallery.albumMap[path].subAlbums.reverse();
 			}
-		}
+       });
+
+		
 	
 		Gallery.view.viewAlbum(Gallery.currentAlbum);
 		Gallery.bSort = true;
@@ -391,15 +399,15 @@ Gallery.sortImagesByDate = function() {
 		var album = Gallery.albumMap[albumPath];
 		var images = album.images;
 
-		for (path in Gallery.albumMap) {
-			Gallery.albumMap[path].images.sort(sortFunction);
+		 $.each(Gallery.albumMap,function(path){
+         	Gallery.albumMap[path].images.sort(sortFunction);
 			Gallery.albumMap[path].subAlbums.sort(sortFunction);
 			//Sort DESC
 			if ($('button.sortdate').hasClass('arrowDown')) {
 				Gallery.albumMap[path].images.reverse();
 				Gallery.albumMap[path].subAlbums.reverse();
 			}
-		}
+       });
 
 		
 		Gallery.view.viewAlbum(albumPath);
@@ -480,7 +488,9 @@ $(document).ready(function() {
 	Gallery.showLoading();
 
 	Gallery.view.element = $('#gallery');
+	
 	Gallery.fillAlbums().then(function() {
+		
 		if (Gallery.images.length === 0) {
 			Gallery.showEmpty();
 		}

@@ -181,21 +181,25 @@ Album.prototype.getNextRow = function (width) {
 	 * @param {GalleryImage[]} images
 	 * @returns {$.Deferred<Row>}
 	 */
+	
 	var addImages = function (album, row, images) {
-	 if ((album.viewedItems + 5) > album.preloadOffset) {
+	 if(Gallery.fallBack==false){
+	 	if ((album.viewedItems + 5) > album.preloadOffset) {
 			album.preload(20);
 		}
-
+	 }else{
+	 	
+		for (var i = 0; i < 3; i++) {
+			if (images[album.viewedItems + i]) {
+				images[album.viewedItems + i].getThumbnail();
+			}
+		}
+	 }
 		var image = images[album.viewedItems];
 		return row.addImage(image).then(function (more) {
 			
 			album.viewedItems++;
-			/*
-			if(album.viewedItems >= album.images.length){
-		        Gallery.sortActive(true);
-	       }else{
-	       	    Gallery.sortActive(false);
-	       }*/
+			
 			if (more && album.viewedItems < images.length) {
 				return addImages(album, row, images);
 			} else {
@@ -250,9 +254,13 @@ Album.prototype.preload = function (count) {
 			fileIds = fileIds.concat(items[i].getThumbnailIds());
 			paths = paths.concat(items[i].getThumbnailPaths());
 		}
+		
 	}
-
+ 
 	this.preloadOffset = i;
+	
+	
+	
 	Thumbnail.loadBatch(paths, fileIds, false, this.token);
 	Thumbnail.loadBatch(squarePaths, squareFileIds, true, this.token);
 	
@@ -262,6 +270,7 @@ function Row (targetWidth) {
 	this.targetWidth = targetWidth;
 	this.items = [];
 	this.width = 8; // 4px margin to start with
+	
 }
 
 /**
