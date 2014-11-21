@@ -612,25 +612,23 @@ SlideShow.prototype.show = function(index) {
 			this.container.children('img').remove();
 
 			this.container.append(image);
-			//alert(this.container.children('img').position().left);
 
 			jQuery(image).css({
-				'position' : 'absolute'
+				'position' : 'absolute',
 			});
 			
-			//var scale = (window.devicePixelRatio !== undefined) ?window.devicePixelRatio : 1;
-			  var scale=1;
-			if((image.height > image.width) && image.height > $(window).height()){
+			var scale=1;
+			if(($(image).height() > $(image).width()) && $(image).height() > $(window).height()){
 				  scale=0.8;
 			}
-		  
+		 
 			this.zoomable = new bigshot.SimpleImage(new bigshot.ImageParameters({
 				container : this.container.get(0),
 				maxZoom : 2,
 				minZoom : -1,
 				touchUI : false,
-				width : (image.width * scale),
-				height : (image.height * scale)
+				width : ($(image).width() * scale),
+				height : ($(image).height() * scale)
 			}), image);
 
 			// prevent zoom-on-doubleClick
