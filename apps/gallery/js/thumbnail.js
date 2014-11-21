@@ -58,13 +58,14 @@ Thumbnail.loadBatch = function (paths, ids, square, token) {
 	});
 	
 	var thumbnails = {};
-	var lengthCounter=0; //max.983
 	
 	if (paths.length) {
+		
 		paths.forEach(function (path) {
 			var thumb = new Thumbnail(path, square, token);
 			thumb.image = new Image();
 			map[path] = thumbnails[path] = thumb;
+			
 		});
       
 		var url = OC.generateUrl('apps/gallery/ajax/thumbnail/batch?token={token}&image={images}&scale={scale}&square={square}', {
@@ -74,21 +75,32 @@ Thumbnail.loadBatch = function (paths, ids, square, token) {
 			token: (token) ? token : ''
 		});
 		
+	   //Needed for Fallback Browsers e.g. Internet Explorer
 		var eventSource = new OC.EventSource(url);
-		eventSource.listen('preview', function (data) {
+		   eventSource.listen('done', function (data) {
+		  	//alert(data.msg);
+		  });
+		  
+		  eventSource.listen('preview', function (data) {
+			
 			var path = data.image;
 			var extension = path.substr(path.length - 3);
 			var thumb = thumbnails[path];
-			thumb.image.onload = function () {
-				Thumbnail.loadingCount--;
-				thumb.image.ratio = thumb.image.width / thumb.image.height;
-				thumb.image.originalWidth = 200 * thumb.image.ratio;
-				thumb.loadingDeferred.resolve(thumb.image);
-				
-			};
-			thumb.image.src = 'data:image/' + extension + ';base64,' + data.preview;
+			
+			if(typeof thumb != 'undefined'){
+				thumb.image.onload = function () {
+					Thumbnail.loadingCount--;
+					thumb.image.ratio = thumb.image.width / thumb.image.height;
+					thumb.image.originalWidth = thumb.image.width / window.devicePixelRatio;
+					thumb.loadingDeferred.resolve(thumb.image);
+					
+				};
+				thumb.image.src = 'data:image/' + extension + ';base64,' + data.preview;
+			}
 		});
+		
 	}
+	
 	return thumbnails;
 };
 
@@ -96,6 +108,7 @@ Thumbnail.prototype.load = function () {
 	var that = this;
 	if (!this.image) {
 		this.image = new Image();
+		
 		this.image.onload = function () {
 			Thumbnail.loadingCount--;
 			that.image.ratio = that.image.width / that.image.height;

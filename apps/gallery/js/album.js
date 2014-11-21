@@ -183,18 +183,11 @@ Album.prototype.getNextRow = function (width) {
 	 */
 	
 	var addImages = function (album, row, images) {
-	 if(Gallery.fallBack==false){
+	
 	 	if ((album.viewedItems + 5) > album.preloadOffset) {
 			album.preload(20);
 		}
-	 }else{
-	 	
-		for (var i = 0; i < 3; i++) {
-			if (images[album.viewedItems + i]) {
-				images[album.viewedItems + i].getThumbnail();
-			}
-		}
-	 }
+	
 		var image = images[album.viewedItems];
 		return row.addImage(image).then(function (more) {
 			

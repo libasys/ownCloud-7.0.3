@@ -49,7 +49,7 @@ if (!empty($_GET['token'])) {
 }
 
 \OC::$session->close();
-$eventSource = new OC_EventSource();
+$EventSource = new OC_EventSource();
 
 foreach ($imageIds as $imageId) {
 	$height = 200 * $scale;
@@ -62,7 +62,6 @@ foreach ($imageIds as $imageId) {
 	$userView = new \OC\Files\View('/' . $user);
 	$path= $userView->getPath($imageId);
 	$relPath= substr($path,6);
-    //\OC_Log::write('gallery', 'IMG ID -> ' . $relPath, \OC_Log::DEBUG);
 	
 	$preview = new \OC\Preview($user, 'files',$relPath, $width, $height);
 	$preview->setKeepAspect(!$square);
@@ -72,15 +71,16 @@ foreach ($imageIds as $imageId) {
 	
 	if ($path = $preview->isCached($imageId)) {
 		
-		$eventSource->send('preview', array(
+		$EventSource->send('preview', array(
 			'image' => $imageName,
 			'preview' => base64_encode($userView->file_get_contents('/' . $path))
 		));
 	} else {
-		$eventSource->send('preview', array(
+		$EventSource->send('preview', array(
 			'image' => $imageName,
 			'preview' => (string)$preview->getPreview()
 		));
 	}
 }
-$eventSource->close();
+$EventSource->send('done', array('msg' => 'allLoaded'));
+$EventSource->close();

@@ -2,13 +2,14 @@ var Gallery = {};
 Gallery.images = [];
 Gallery.currentAlbum = '';
 Gallery.users = [];
-Gallery.fallBack=(typeof EventSource === 'undefined')?true:false;
-//Gallery.fallBack=true;
 Gallery.albumMap = {};
 Gallery.imageMap = {};
 Gallery.folderSharees = {};
 Gallery.init = false;
 Gallery.bSort = true;
+
+
+
 Gallery.getAlbum = function(path, token) {
 	if (!Gallery.albumMap[path]) {
 		Gallery.albumMap[path] = new Album(path, [], [], OC.basename(path), token);
@@ -82,8 +83,7 @@ Gallery.fillAlbums = function() {
          	Gallery.albumMap[path].images.sort(sortFunction);
 			Gallery.albumMap[path].subAlbums.sort(sortFunction);
         });
-       
-		
+ 		
 	});
 
 };
@@ -206,7 +206,7 @@ Gallery.view.loadVisibleRows = function(album, path) {
 	// load 2 windows worth of rows
 	var scroll = $('#content-wrapper').scrollTop() + $(window).scrollTop();
 	var targetHeight = ($(window).height() * 2) + scroll;
-
+	var windowWidth=$(window).width()-5;
 	
 	var showRows = function(album) {
 		if (!(album.viewedItems < album.subAlbums.length + album.images.length)) {
@@ -214,7 +214,7 @@ Gallery.view.loadVisibleRows = function(album, path) {
 			return;
 		}
 		
-		return album.getNextRow($(window).width()).then(function(row) {
+		return album.getNextRow(windowWidth).then(function(row) {
 			
 			return row.getDom().then(function(dom) {
 				// defer removal of loading class to trigger CSS3 animation
