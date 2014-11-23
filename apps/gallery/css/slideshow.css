@@ -209,8 +209,8 @@
      width:38px;
 }
 
-#slideshow  input[type="button"].icon-view-previewgal {
-    background-image: url("../img/toggle-pictures.svg");
+#slideshow  input[type="button"].icon-view-download {
+    background-image: url("../img/download.svg");
      background-size:26px 26px;
      -webkit-background-size:26px 26px;
      background-color:#fff;
@@ -284,7 +284,7 @@
 	
 }
 
-#slideshow > .previewGal {
+#slideshow > .downloadImage {
 	
 	right: 165px;
 	top: 6px;

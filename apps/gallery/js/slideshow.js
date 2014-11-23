@@ -59,6 +59,8 @@ SlideShow.prototype.init = function(play) {
 
 	// hide arrows and play/pause when only one pic
 	this.mainContainer.find('.next, .previous').toggle(this.images.length > 1);
+		
+	
 	if (this.images.length === 1) {
 		this.mainContainer.find('.play, .pause').hide();
 	}
@@ -84,7 +86,7 @@ SlideShow.prototype.init = function(play) {
 
 		this.mainContainer.children('.infoMeta').click(makeCallBack(this.metaInfoShow));
 		this.mainContainer.children('.controlsOn').click(makeCallBack(this.controlsAlwaysOn));
-		//this.mainContainer.children('.previewGal').click(makeCallBack(this.initPreviewImages));
+		this.mainContainer.children('.downloadImage').click(makeCallBack(this.getImageDownload));
 		this.mainContainer.children('.zoomToFitHeight').click(makeCallBack(this.zoomToFitHeight));
 		this.mainContainer.children('.zoomToFitWidth').click(makeCallBack(this.zoomToFitWidth));
 		this.mainContainer.children('.zoomToFit').click(makeCallBack(this.zoomToFit));
@@ -103,7 +105,8 @@ SlideShow.prototype.init = function(play) {
 		this.mainContainer.children('.previewPrevious').hide();
 		this.mainContainer.children('.editItMeta').hide();
 		this.mainContainer.children('.infoMeta').hide();
-		//this.mainContainer.children('.previewGal').hide();
+		this.mainContainer.children('.downloadImage').hide();
+		
 		this.mainContainer.children('.controlsOn').hide();
 		this.mainContainer.children('.zoomToFitHeight').hide();
 		this.mainContainer.children('.zoomToFitWidth').hide();
@@ -304,7 +307,7 @@ SlideShow.prototype.initPreviewImages = function() {
 
 		if ($('.imagePreview').length >= 1) {
 			this.previewContainer.show();
-			this.scrollToPreview(this.current);
+			//this.scrollToPreview(this.current);
 		} else {
 
 			var makeCallBack = function(handler) {
@@ -371,7 +374,7 @@ SlideShow.prototype.initPreviewImages = function() {
 			}.bind(this));
 
 			this.previewContainer.append(imgDiv);
-            this.scrollToPreview(this.current);
+           // this.scrollToPreview(this.current);
 			var browser = new bigshot.Browser();
 
 			this.previewContainer.children('img').each(function(i, e) {
@@ -414,7 +417,7 @@ SlideShow.prototype.nextPagePreview = function() {
 		this.currentIndex = (curPage * picsPerPage) + 1;
 	}
 
-	this.scrollToPreview(this.currentIndex);
+	//this.scrollToPreview(this.currentIndex);
 
 };
 
@@ -446,8 +449,14 @@ SlideShow.prototype.previousPagePreview = function() {
 		this.currentIndex = 0;
 	}
 
-	this.scrollToPreview(this.currentIndex);
+	//this.scrollToPreview(this.currentIndex);
 
+};
+
+SlideShow.prototype.getImageDownload=function(){
+	
+	window.location=OC.generateUrl('apps/gallery/downloadimage?file={file}',{file: encodeURIComponent(this.images[this.current].path)});
+	return false;
 };
 
 SlideShow.prototype.zoomToFit = function() {
@@ -593,9 +602,9 @@ SlideShow.prototype.show = function(index) {
 		$('.imagePreview').removeClass('active');
 		$('.imagePreview[data-index=' + index + ']').addClass('active');
 
-		this.scrollToPreview(this.current);
+		//this.scrollToPreview(this.current);
 	}
-
+  
 	this.getMetaInfo(this.images[index].path);
 
 	return this.loadImage(this.images[index].url, this.images[index].path).then( function(image) {
@@ -612,7 +621,7 @@ SlideShow.prototype.show = function(index) {
 			this.container.children('img').remove();
 
 			this.container.append(image);
-
+			
 			jQuery(image).css({
 				'position' : 'absolute',
 			});
@@ -636,7 +645,7 @@ SlideShow.prototype.show = function(index) {
 				this.zoomToFit();
 				ie.preventDefault();
 			}.bind(this));
-          
+         
 
 			if (this.zoomActiveMode == 0) {
 				this.zoomToFit();
@@ -711,6 +720,7 @@ SlideShow.prototype.clearTimeout = function() {
 SlideShow.prototype.play = function() {
 	this.playing = true;
 	this.mainContainer.find('.pause').show();
+	
 	this.mainContainer.find('.play').hide();
 	if(!this.bMinimal){
 		this.mainContainer.children('.editItMeta').hide();
@@ -847,10 +857,9 @@ $(document).ready(function() {
 				var file = files[i];
 				if (file.mimetype && file.mimetype.indexOf('image') >= 0) {
 					if (file.mimetype === 'image/tiff') {
-					 continue;
-					 }
-					
-					if (file.mimetype === 'image/svg+xml') {
+					   continue;
+					}
+					else if (file.mimetype === 'image/svg+xml') {
 						 continue;
 					} else {
 						imageUrl = OC.generateUrl('/core/preview.png?file={file}&x={x}&y={y}&a=true&scalingup=0', {
