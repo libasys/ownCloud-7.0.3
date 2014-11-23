@@ -42,15 +42,15 @@ Album.prototype.getOneImage = function (image, targetHeight, calcWidth, a, squar
 	gm.getThumbnail(square).then(function(img) {
 		
 		if(square == 2){
-			var divCrop=$('<div/>').addClass('cropHeight').css({'margin-left':'0px','max-height': ((targetHeight / 2)-2)+'px','overflow':'hidden','display':'block','width':(calcWidth-1)+'px'});
+			var divCrop=$('<div/>').addClass('cropHeight').css({'margin-left':'0px','max-height': (targetHeight / 2)+'px','overflow':'hidden','display':'block','width':(calcWidth)+'px'});
 			$(img).addClass('scale');
 			divCrop.append(img);
 			a.append(divCrop);
-			img.width = calcWidth-1;
+			img.width = calcWidth;
 		}else{
 			a.append(img);
-			img.height = (targetHeight / 2) - 2;
-			img.width = calcWidth-2;
+			img.height = (targetHeight / 2);
+			img.width = calcWidth;
 		}
 		 $(img).click(function(){
 		    window.location='#'+albumpath;
