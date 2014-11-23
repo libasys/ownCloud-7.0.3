@@ -87,32 +87,29 @@ class ImageController extends Controller {
 				
 				$result['size'] = $size[0] . ' x ' . $size[1] . ' px';
 				
-				if (is_array($info) && array_key_exists('APP13',$info)) {
+				if(isset($info['APP13'])){
 					$iptc = iptcparse($info["APP13"]);
-					
-					if(array_key_exists('2#120', $iptc)){
-						$result['description'] = $iptc['2#120'][0];
+					if (is_array($iptc)) { 
+						if(array_key_exists('2#120', $iptc)){
+							$result['description'] = $iptc['2#120'][0];
+						}
+						if(array_key_exists('2#105', $iptc)){
+							$result['title'] = $iptc['2#105'][0];
+						}
+						if(array_key_exists('2#055', $iptc)){
+							$dateTime=new \DateTime($iptc['2#055'][0]);
+							$result['creation_date']=$dateTime->format('d-m-Y');
+						}
+						if(array_key_exists('2#101', $iptc)){
+							$result['country'] = $iptc['2#101'][0];
+						}
+						if(array_key_exists('2#090', $iptc)){
+							$result['city'] = $iptc['2#090'][0];
+						}
+						if(array_key_exists('2#092', $iptc)){
+							$result['location'] = $iptc['2#092'][0];
+						}
 					}
-					if(array_key_exists('2#105', $iptc)){
-						$result['title'] = $iptc['2#105'][0];
-					}
-					if(array_key_exists('2#055', $iptc)){
-						$dateTime=new \DateTime($iptc['2#055'][0]);
-						$result['creation_date']=$dateTime->format('d-m-Y');
-					}
-					if(array_key_exists('2#101', $iptc)){
-						$result['country'] = $iptc['2#101'][0];
-					}
-					if(array_key_exists('2#090', $iptc)){
-						$result['city'] = $iptc['2#090'][0];
-					}
-					if(array_key_exists('2#092', $iptc)){
-						$result['location'] = $iptc['2#092'][0];
-					}
-					/*
-					foreach($iptc as $key => $val){
-						\OC_Log::write('gallery', 'IPTC' .$key.':'.$val[0], \OC_Log::DEBUG);
-					}*/
 		
 				}
 				

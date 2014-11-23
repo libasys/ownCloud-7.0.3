@@ -313,11 +313,12 @@ class PageController extends Controller {
 				   
 					$local = $userView -> getLocalFile('/files' . $path . $image['path']);
 					$size = getimagesize($local, $info);
-					if(is_array($info) && array_key_exists('APP13', $info)) {
+					if(isset($info['APP13'])){
 						$iptc = iptcparse($info["APP13"]);
-						if (array_key_exists('2#105', $iptc)) {
-							$title = $iptc['2#105'][0];
-				
+						if (is_array($iptc)) { 
+							if (array_key_exists('2#105', $iptc)) {
+								$title = $iptc['2#105'][0];
+							}
 						}
 					}
 				
